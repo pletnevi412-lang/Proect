@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сайт с авторизацией (SQLite)</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Навигация -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="#" class="logo">AuthSite</a>
+            <div class="nav-links">
+                <a href="#" id="home-link">Главная</a>
+                <a href="#" id="profile-link" style="display: none;">Профиль</a>
+                <button id="update-profile-btn" style="display: none;">Обновить профиль</button>
+                <button id="logout-btn" style="display: none;">Выйти</button>
+                <button id="login-btn">Войти</button>
+                <button id="register-btn">Регистрация</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Главная страница -->
+    <main class="container">
+        <section id="home-page">
+            <h1>Добро пожаловать!</h1>
+            <p>Это современный сайт с системой авторизации на основе SQLite базы данных.</p>
+            <p>Возможности:</p>
+            <ul>
+                <li>Безопасная регистрация и вход</li>
+                <li>Хранение данных в SQLite базе</li>
+                <li>Защита паролей с помощью bcrypt</li>
+                <li>JWT-токены для аутентификации</li>
+                <li>Обновление профиля</li>
+            </ul>
+        </section>
+
+        <!-- Страница профиля (скрыта по умолчанию) -->
+        <section id="profile-page" style="display: none;">
+            <h1>Ваш профиль</h1>
+            <div class="profile-info">
+                <p><strong>Имя пользователя:</strong> <span id="profile-username"></span></p>
+                <p><strong>Email:</strong> <span id="profile-email"></span></p>
+                <p><strong>Дата регистрации:</strong> <span id="profile-date"></span></p>
+            </div>
+        </section>
+
+        <!-- Модальное окно входа -->
+        <div id="login-modal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Вход в систему</h2>
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="login-email">Email:</label>
+                        <input type="email" id="login-email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Пароль:</label>
+                        <input type="password" id="login-password" required>
+                        <button type="button" class="show-password" data-target="login-password">
+                            <i class="far fa-eye"></i>
+                        </button>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Войти</button>
+                </form>
+                <p class="form-footer">
+                    Нет аккаунта? <a href="#" id="go-to-register">Зарегистрироваться</a>
+                </p>
+                <div id="login-message" class="message"></div>
+            </div>
+        </div>
+
+        <!-- Модальное окно регистрации -->
+        <div id="register-modal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Регистрация</h2>
+                <form id="register-form">
+                    <div class="form-group">
+                        <label for="register-username">Имя пользователя:</label>
+                        <input type="text" id="register-username" required minlength="3">
+                    </div>
+                    <div class="form-group">
+                        <label for="register-email">Email:</label>
+                        <input type="email" id="register-email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-password">Пароль:</label>
+                        <input type="password" id="register-password" required minlength="6">
+                        <button type="button" class="show-password" data-target="register-password">
+                            <i class="far fa-eye"></i>
+                        </button>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirm-password">Подтвердите пароль:</label>
+                        <input type="password" id="confirm-password" required minlength="6">
+                        <button type="button" class="show-password" data-target="confirm-password">
+                            <i class="far fa-eye"></i>
+                        </button>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+                </form>
+                <p class="form-footer">
+                    Уже есть аккаунт? <a href="#" id="go-to-login">Войти</a>
+                </p>
+                <div id="register-message" class="message"></div>
+            </div>
+        </div>
+
+        <!-- Модальное окно обновления профиля -->
+        <div id="update-profile-modal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Обновление профиля</h2>
+                <form id="update-profile-form">
+                    <div class="form-group">
+                        <label for="update-username">Новое имя пользователя:</label>
+                        <input type="text" id="update-username" minlength="3">
+                        <small>Оставьте пустым, если не хотите менять</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="update-email">Новый Email:</label>
+                        <input type="email" id="update-email">
+                        <small>Оставьте пустым, если не хотите менять</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="update-password">Новый пароль:</label>
+                        <input type="password" id="update-password" minlength="6">
+                        <button type="button" class="show-password" data-target="update-password">
+                            <i class="far fa-eye"></i>
+                        </button>
+                        <small>Оставьте пустым, если не хотите менять</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="update-confirm-password">Подтвердите новый пароль:</label>
+                        <input type="password" id="update-confirm-password" minlength="6">
+                        <button type="button" class="show-password" data-target="update-confirm-password">
+                            <i class="far fa-eye"></i>
+                        </button>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Обновить профиль</button>
+                </form>
+                <div id="update-message" class="message"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>© 2024 Сайт с авторизацией на SQLite. Все права защищены.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
